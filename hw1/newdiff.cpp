@@ -140,7 +140,7 @@ int diff(int (*func)(FILE*, FILE*), const char *sourcefile, const char *destfile
     fclose(dst);
 
     if (count > 0 ) {
-        printf("Files conatins %d differences.", count);
+        printf("Files conatins %d differences.\n", count);
     }
 
     return 0;
@@ -164,7 +164,7 @@ int main(const int argc, const char *argv[]) {
     if (strcmp(argv[1], "-w") != 0 &&
         strcmp(argv[1], "-c") != 0 &&
         strcmp(argv[1], "-l") != 0) {
-        printf("Comparison approach is not given. -w/-c/-l");
+        printf("Comparison approach is not given. -w/-c/-l\n");
         return -1;
     }
 
