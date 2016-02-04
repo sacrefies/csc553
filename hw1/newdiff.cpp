@@ -139,11 +139,11 @@ int diff(int (*func)(FILE*, FILE*), const char *sourcefile, const char *destfile
     fclose(src);
     fclose(dst);
 
-    if (count > 0 ) {
+    if (count >= 0 ) {
         printf("Files conatins %d differences.\n", count);
     }
 
-    return 0;
+    return count;
 }
 
 
@@ -156,6 +156,8 @@ int diff(int (*func)(FILE*, FILE*), const char *sourcefile, const char *destfile
  * @return Returns 0 if no error happens.
  */
 int main(const int argc, const char *argv[]) {
+    int diffret = 0;
+
     if (argc < 4) {
         printf("Wrong argument input\n");
         return -1;
@@ -169,15 +171,18 @@ int main(const int argc, const char *argv[]) {
     }
 
     if (strcmp(argv[1], "-w") == 0) {
-       return diff(compareWords, argv[2], argv[3]);
+        diffret = diff(compareWords, argv[2], argv[3]);
+        printf("%d\n", diffret);
     }
 
     if (strcmp(argv[1], "-c") == 0) {
-        return diff(compareChars, argv[2], argv[3]);
+        diffret = diff(compareChars, argv[2], argv[3]);
+        printf("%d\n", diffret);
     }
 
     if (strcmp(argv[1], "-l") == 0) {
-        return diff(compareLines, argv[2], argv[3]);
+        diffret = diff(compareLines, argv[2], argv[3]);
+        printf("%d\n", diffret);
     }
 
      return 0;
