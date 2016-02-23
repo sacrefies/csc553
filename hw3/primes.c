@@ -52,7 +52,7 @@ static bool isnumber(const char str[]) {
             count_digit ++;
     }
 
-    return (count_digit < 1)? false: true;
+    return (count_digit >= 1);
 }
 
 
