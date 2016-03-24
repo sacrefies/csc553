@@ -18,7 +18,7 @@
 
 
 #ifndef PTHREAD_COUNT
-#define PTHREAD_COUNT      10
+#define PTHREAD_COUNT      5
 #define THREAD_SLEEP_COUNT 5
 #define THREAD_SLEEP_SEC   1
 #endif
