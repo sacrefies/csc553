@@ -90,45 +90,47 @@ static void * threadRun(void * params) {
     int * args = (int *)params;
     int procIndex = (int)args[0];
 
+    printf("Proc %d - Received params[0] = %d\n", procIndex, ((int *)params)[0]);
+
     printf("Proc %d - Running\n", procIndex);
     // Note: don't do critical condition test outside the locking area
-    while (true) {
+    while (burstTimes[procIndex] > 0) {
         printf("Proc %d - Acquiring lock\n", procIndex);
         pthread_mutex_lock(&mutex);
         // if not ready, keep waiting and release the mutex
         printf("Proc %d - ready = %s\n", procIndex,
                (ready[procIndex] == true) ? "true" : "false");
-        while (false == ready[procIndex]) {
+
+        if (false == ready[procIndex]) {
             printf("Proc %d - Wait\n", procIndex);
             pthread_cond_wait(&cond, &mutex);
+        } else {
+            // ready, go
+            // run for runTime duration
+            int runTime = (burstTimes[procIndex] >= quantum) ?
+                quantum : burstTimes[procIndex];
+            // minus burst time by the runTime
+            burstTimes[procIndex] -= runTime;
+            printf("Proc %d - Calc run time: %d\n", procIndex, runTime);
+            printf("Proc %d - Remaining run time: %d\n", procIndex, burstTimes[procIndex]);
+            printf("Proc %d - Running\n", procIndex);
+            sleep(runTime);
+            printf("Proc %d - Set ready flag to false\n", procIndex);
+            ready[procIndex] = false;
+            printf("Proc %d - Releasing lock\n", procIndex);
         }
-
-        // ready, go
-        // run for runTime duration
-        int runTime = (burstTimes[procIndex] >= quantum) ?
-            quantum : burstTimes[procIndex];
-        // minus burst time by the runTime
-        burstTimes[procIndex] -= runTime;
-        printf("Proc %d - Calc run time: %d\n", procIndex, runTime);
-        printf("Proc %d - Remaining run time: %d\n", procIndex, burstTimes[procIndex]);
-        printf("Proc %d - Running\n", procIndex);
-        sleep(runTime);
-        printf("Proc %d - Releasing lock\n", procIndex);
         pthread_mutex_unlock(&mutex);
-
-        if (burstTimes[procIndex] == 0) {
-            printf("Proc %d - Run time exceeded, exit\n", procIndex);
-            printf("Proc %d - =====> Exit\n", procIndex);
-            pthread_exit(NULL);
-        }
     }
+    printf("Proc %d - Run time exceeded, exit\n", procIndex);
+    printf("Proc %d - =====> Exit\n", procIndex);
+    pthread_exit(NULL);
 } /* threadRun */
 
 
 /**
  * A scheduler thread for thread management which implements round-robin
  */
-static void * scheduler() {
+static void * scheduler(void * params) {
     char buff[10];
 
     // create a queue for the process identities
@@ -204,8 +206,7 @@ int main(const int argc, const char * argv[]) {
     quantum = toInt(argv[1]);
     // (ACCEPT_ARG_COUNT - 2) normal running thread
     // and +1 scheduler thread.
-    pthread_t * threads = (pthread_t *)malloc(
-            sizeof(pthread_t) * (ARG_COUNT - 1));
+    pthread_t threads[ARG_COUNT - 1];
 
     // set up the burst times
     // args that appear at position behind ACCEPT_ARG_COUNT
@@ -216,19 +217,18 @@ int main(const int argc, const char * argv[]) {
         ready[i] = false;
     }
 
-    printArray(ARG_COUNT - 2, burstTimes, "Bust Times:");
-    printArray(ARG_COUNT - 2, (int *)ready, "Ready Flags:");
-
     // create threads, join the threads
-    int params[1];
+
     int rc;
+
     for (int tid = 0; tid < ARG_COUNT - 1; ++tid) {
         // create normal threads before the scheduler thread.
         // they will keep waiting for the scheduler do dispatching job
-        params[0] = tid;
         if (tid < ARG_COUNT - 2) {
-            printf("Creating thread %d\n", tid);
-            rc = pthread_create(&threads[tid], NULL, &threadRun, params);
+            int params[1] = { tid };
+            printf("Creating thread %d, params[0]=%d\n", tid, params[0]);
+            rc = pthread_create(&threads[tid], NULL, &threadRun, (void *)params);
+            // pthread_create(&threads[tid], NULL, &threadRun, (void *)params);
         } else {
             printf("Creating scheduler thread tid = %d\n", tid);
             rc = pthread_create(&threads[tid], NULL, &scheduler, NULL);
@@ -237,10 +237,23 @@ int main(const int argc, const char * argv[]) {
             printf("Creating thread %d failed. RC = %d\n", tid, rc);
             exit(EXIT_FAILURE);
         }
+
+        //pthread_join(threads[tid], NULL);
     }
 
     for (int tid = 0; tid < ARG_COUNT - 1; ++tid) {
         printf("Joining thread %d\n", tid);
         pthread_join(threads[tid], NULL);
     }
+
+    // clean up
+    free(burstTimes);
+    free(ready);
+    // free(threads);
+
+    burstTimes = NULL;
+    ready = NULL;
+    // threads = NULL;
+
+    exit(0);
 } /* main */
