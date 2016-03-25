@@ -119,7 +119,9 @@ static void run_threads_join_later_lock() {
     // create threads
     int rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
-        int params[2] = { i, 3 };
+        int * params = (int *)malloc(sizeof(int) * 2);
+        params[0] = i;
+        params[1] = 1;
         print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
         rc = pthread_create(&threads[i], NULL, &runner_with_lock, params);
