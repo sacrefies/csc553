@@ -74,7 +74,7 @@ static void * runner_with_lock(void * params) {
         if (para_list[1] <= 0)
             break;
     }
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_unlock(&mutex);
     pthread_exit(NULL);
 }
 
