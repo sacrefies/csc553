@@ -46,6 +46,7 @@ static void * runner(void * params) {
 
     int tid = para_list[0];
     int sec = (para_list[1] > 0) ? para_list[1] : THREAD_SLEEP_SEC;
+
     printf("%s - Params received: tid=%d, sec=%d\n", __func__, tid, sec);
     for (int i = 0; i < THREAD_SLEEP_COUNT; ++i) {
         printf("%s - Thread %d sleep for %d sec\n", __func__, tid, sec);
@@ -64,6 +65,7 @@ static void * runner_with_lock(void * params) {
 
     int tid = para_list[0];
     int sec = (para_list[1] > 0) ? para_list[1] : THREAD_SLEEP_SEC;
+
     pthread_mutex_lock(&mutex);
     printf("%s - Params received: tid=%d, sec=%d\n", __func__, tid, sec);
     for (int i = 0; i < THREAD_SLEEP_COUNT; ++i) {
@@ -75,7 +77,6 @@ static void * runner_with_lock(void * params) {
     pthread_mutex_lock(&mutex);
     pthread_exit(NULL);
 }
-}
 
 
 static void run_threads_join_later() {
@@ -86,7 +87,7 @@ static void run_threads_join_later() {
     // create threads
     int rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
-        int params[2] = {i, 3};
+        int params[2] = { i, 3 };
         print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
         rc = pthread_create(&threads[i], NULL, &runner, params);
@@ -118,7 +119,7 @@ static void run_threads_join_later_lock() {
     // create threads
     int rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
-        int params[2] = {i, 3};
+        int params[2] = { i, 3 };
         print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
         rc = pthread_create(&threads[i], NULL, &runner_with_lock, params);
@@ -139,7 +140,7 @@ static void run_threads_join_later_lock() {
     pthread_mutex_destroy(&mutex);
     free(threads);
     threads = NULL;
-}
+} /* run_threads_join_later_lock */
 
 
 static void run_threads_join_immediate() {
