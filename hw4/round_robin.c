@@ -119,7 +119,7 @@ static void * threadRun(void * params) {
         printf("Proc %d - Remaining run time: %d\n",
                procIndex, burstTimes[procIndex]);
         printf("Proc %d - Releasing lock\n", procIndex);
-        pthread_cond_broadcast(&cond);
+        // pthread_cond_broadcast(&cond);
         pthread_mutex_unlock(&mutex);
     }
     printf("Proc %d - Run time exceeded, exit\n", procIndex);
@@ -232,14 +232,14 @@ int main(const int argc, const char * argv[]) {
             printf("Creating scheduler thread tid = %d\n", tid);
             rc = pthread_create(&threads[tid], NULL, &scheduler, NULL);
 
-            pthread_join(threads[tid], NULL);
+            // pthread_join(threads[tid], NULL);
         }
         if (rc != 0) {
             printf("Creating thread %d failed. RC = %d\n", tid, rc);
             exit(EXIT_FAILURE);
         }
 
-        // pthread_join(threads[tid], NULL);
+        pthread_join(threads[tid], NULL);
     }
 
     // for (int tid = 0; tid < ARG_COUNT - 1; ++tid) {
