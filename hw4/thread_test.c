@@ -44,6 +44,7 @@ static void * runner(void * params) {
 
     int tid = para_list[0];
     int sec = (para_list[1] > 0) ? para_list[1] : THREAD_SLEEP_SEC;
+    printf("%s - Params received: tid=%d, sec=%d\n", __func__, tid, sec);
     for (int i = 0; i < THREAD_SLEEP_COUNT; ++i) {
         printf("%s - Thread %d sleep for %d sec\n", __func__, tid, sec);
         sleep(sec);
@@ -60,10 +61,10 @@ static void run_threads_join_later() {
     pthread_t * threads = (pthread_t *)malloc(sizeof(pthread_t) * PTHREAD_COUNT);
 
     // create threads
-    int params[2], rc;
+    int rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
-        params[0] = i;
-        params[1] = 3;
+        int params[2] = {i, 3};
+        print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
         rc = pthread_create(&threads[i], NULL, &runner, params);
         if (rc != 0) {
@@ -75,7 +76,9 @@ static void run_threads_join_later() {
 
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
         printf("%s - Join thread %d\n", __func__, i);
-        pthread_join(threads[i], NULL);
+        rc = pthread_join(threads[i], NULL);
+        if (rc != 0)
+            printf("%s - Failed to join thread %d, RC=%d\n", __func__, i, rc);
     }
     // clean up
     free(threads);
@@ -111,6 +114,7 @@ static void run_threads_join_immediate() {
 
 
 int main(const int argc, const char ** argv) {
-    run_threads_join_immediate();
+    // run_threads_join_immediate();
+    printf("%s\n", "*******************");
     run_threads_join_later();
 }
