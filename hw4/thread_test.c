@@ -163,6 +163,8 @@ static void run_threads_join_immediate() {
     // create threads
     int params[2], rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
+        // such practic can only be used in cases that pthread_join happens
+        // immediately after a pthread_create
         params[0] = i;
         params[1] = 0;
         printf("%s - Start thread %d\n", __func__, params[0]);
