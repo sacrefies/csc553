@@ -87,13 +87,16 @@ static void run_threads_join_later() {
     // create threads
     int rc;
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
-        int params[2] = { i, 3 };
+        // good practice
+        int * params = (int *)malloc(sizeof(int) * 2);
+        params[0] = i;
+        params[1] = 3;
         print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
-        rc = pthread_create(&threads[i], NULL, &runner, params);
+        rc = pthread_create(&threads[i], NULL, &runner, (void *)params);
         if (rc != 0) {
             printf("%s - Failed to start thread %d, RC = %d\n",
-                   __func__, params[0], rc);
+                   __func__, i, rc);
             exit(EXIT_FAILURE);
         }
     }
@@ -107,7 +110,6 @@ static void run_threads_join_later() {
     // clean up
     free(threads);
     threads = NULL;
-
 } /* run_threads_join_later */
 
 
@@ -118,16 +120,24 @@ static void run_threads_join_later_lock() {
 
     // create threads
     int rc;
+
     for (int i = 0; i < PTHREAD_COUNT; ++i) {
+        // bad practice
+        // int args[2] = {i, 1};
+
+        // good practice
         int * params = (int *)malloc(sizeof(int) * 2);
         params[0] = i;
         params[1] = 1;
         print_array(params, 2, __func__);
         printf("%s - Start thread %d\n", __func__, params[0]);
-        rc = pthread_create(&threads[i], NULL, &runner_with_lock, params);
+        rc = pthread_create(&threads[i], NULL, &runner_with_lock, (void *)params);
+        // bad practice
+        // free(params);
+        // params = NULL;
         if (rc != 0) {
             printf("%s - Failed to start thread %d, RC = %d\n",
-                   __func__, params[0], rc);
+                   __func__, i, rc);
             exit(EXIT_FAILURE);
         }
     }
@@ -156,7 +166,7 @@ static void run_threads_join_immediate() {
         params[0] = i;
         params[1] = 0;
         printf("%s - Start thread %d\n", __func__, params[0]);
-        rc = pthread_create(&threads[i], NULL, &runner, params);
+        rc = pthread_create(&threads[i], NULL, &runner, (void *)params);
         if (rc != 0) {
             printf("%s - Failed to start thread %d, RC = %d\n",
                    __func__, params[0], rc);
@@ -172,10 +182,10 @@ static void run_threads_join_immediate() {
 
 
 int main(const int argc, const char ** argv) {
-    // printf("%s\n", "*******************");
-    // run_threads_join_immediate();
-    // printf("%s\n", "*******************");
-    // run_threads_join_later();
+    printf("%s\n", "*******************");
+    run_threads_join_immediate();
+    printf("%s\n", "*******************");
+    run_threads_join_later();
     printf("%s\n", "*******************");
     run_threads_join_later_lock();
     exit(EXIT_SUCCESS);
