@@ -1,9 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: ascii -*-
-#
-# Revision:    $Id$
 
-
+__rev__ = """$Id$"""
 __created__ = """04/08/2016 01:20:29 PM"""
 __author__ = """Jason Meng (jm)"""
 __email__ = """jm652564@sju.edu"""
