@@ -67,6 +67,13 @@ artifacts/
 *.svclog
 *.scc
 
+# compiler outputs
+*.exe
+*.out
+*.a
+*.class
+*.pyc
+
 # Chutzpah Test files
 _Chutzpah*
 

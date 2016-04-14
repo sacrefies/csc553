@@ -74,12 +74,16 @@
 *.h text
 *.h++ text
 *.hh text
+*.java  text
+*.py    text
 
 # Compiled Object files
 *.slo binary
 *.lo binary
 *.o binary
 *.obj binary
+*.pyc   binary
+*.class binary
 
 # Precompiled Headers
 *.gch binary
@@ -110,3 +114,5 @@
 *.h     ident
 *.txt   ident
 *.hpp   ident
+*.py    ident
+*.java  ident
