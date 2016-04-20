@@ -39,8 +39,8 @@ def sstf_seq(head_pos, requests):
     print "Service Seq: ",
     req = list(requests)
     while len(req) > 0:
-        req.sort(cmp=lambda i, j:sstf_comp(i, j, head_pos))
-        head_pos = req.pop(0);
+        req.sort(cmp=lambda i, j: sstf_comp(i, j, head_pos))
+        head_pos = req.pop(0)
         print head_pos,
     print "\n"
 
